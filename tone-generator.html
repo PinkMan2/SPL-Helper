@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPL-Helper LABS | Генератор частот</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-[#0a0b0d] text-white">
+
+    <header class="border-b-2 border-[#22262e] bg-[#121417] py-6 px-4 md:px-8 relative">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <a href="index.html" class="flex items-center gap-3 group transition-all">
+                <div class="w-10 h-10 rounded-lg border border-[#22262e] flex items-center justify-center bg-[#0a0b0d] group-hover:border-[#00e676] transition-colors">
+                    <svg class="w-5 h-5 text-[#848d9a] group-hover:text-[#00e676] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-xs text-[#00e676] font-bold tracking-widest uppercase">Назад в меню</span>
+                    <h1 class="text-lg font-extrabold tracking-wider uppercase">SPL-Helper <span class="text-[#00e676]">LABS</span></h1>
+                </div>
+            </a>
+            <div class="text-right hidden sm:block">
+                <span class="text-sm font-semibold text-[#00e676]">Тонгенератор</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl w-full mx-auto p-4 md:p-8 flex-grow space-y-6">
+        
+        <!-- Верхний блок управления -->
+        <section class="bg-[#121417] border border-[#22262e] rounded-xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
+            <div class="absolute inset-0 pointer-events-none opacity-10 bg-repeat bg-center" style="background-image: url('watermark.png');"></div>
+
+            <div class="relative z-10">
+                <h2 class="text-xl font-bold tracking-wide uppercase mb-1">Генератор частоты</h2>
+                <p class="text-xs text-[#848d9a]">Тестирование акустики, поиск резонансов салона и разминка подвижной системы.</p>
+            </div>
+
+            <hr class="border-[#22262e] relative z-10">
+
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Секция 1: Режимы работы и Громкость -->
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold tracking-wider uppercase text-[#848d9a] block">Режим работы</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="mode-static" class="py-2.5 px-4 bg-[#0a0b0d] border border-[#00e676] text-[#00e676] font-bold text-xs uppercase rounded-lg tracking-wider transition-colors">Постоянный тон</button>
+                            <button id="mode-sweep" class="py-2.5 px-4 bg-[#0a0b0d] border border-[#22262e] text-[#848d9a] font-bold text-xs uppercase rounded-lg tracking-wider transition-colors hover:text-white">Частотный свип</button>
+                        </div>
+                    </div>
+
+                    <!-- Громкость -->
+                    <div class="space-y-2 bg-[#0a0b0d] border border-[#22262e] rounded-xl p-3.5">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="volume-slider" class="text-xs font-bold tracking-wider uppercase text-[#848d9a]">Громкость</label>
+                            <span id="volume-val" class="text-xs font-mono font-bold text-[#00e676]">20%</span>
+                        </div>
+                        <input id="volume-slider" type="range" min="0" max="100" value="20" class="w-full accent-[#00e676] cursor-pointer bg-[#22262e] h-1.5 rounded-lg appearance-none">
+                    </div>
+                </div>
+
+                <!-- Секция 2: Баланс и Таймер отключения -->
+                <div class="space-y-4 flex flex-col justify-between">
+                    <!-- Баланс -->
+                    <div class="space-y-2 bg-[#0a0b0d] border border-[#22262e] rounded-xl p-3 h-[84px] flex flex-col justify-center">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="balance-slider" class="text-xs font-bold tracking-wider uppercase text-[#848d9a]">Баланс (L / R)</label>
+                            <span id="balance-val" class="text-xs font-mono font-bold text-[#848d9a]">Центр</span>
+                        </div>
+                        <input id="balance-slider" type="range" min="-1" max="1" step="0.1" value="0" class="w-full accent-[#00e676] cursor-pointer bg-[#22262e] h-1.5 rounded-lg appearance-none">
+                        <div class="flex justify-between text-[9px] text-[#848d9a] font-bold px-0.5 mt-1">
+                            <span>ЛЕВЫЙ</span>
+                            <span>ЦЕНТР</span>
+                            <span>ПРАВЫЙ</span>
+                        </div>
+                    </div>
+
+                    <!-- Таймер отключения -->
+                    <div class="space-y-2 bg-[#0a0b0d] border border-[#22262e] rounded-xl p-3 flex items-center justify-between gap-4 h-[58px]">
+                        <div>
+                            <label for="timer-input" class="text-xs font-bold tracking-wider uppercase text-[#848d9a] block">Таймер автоотключения</label>
+                            <span class="text-[10px] text-[#626b77]">0 — без таймера</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 font-mono">
+                            <input id="timer-input" type="number" min="0" max="180" value="0" class="w-16 bg-[#121417] border border-[#22262e] text-center rounded-lg py-1 text-white font-bold text-sm focus:outline-none focus:border-[#00e676] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                            <span class="text-xs text-[#848d9a] uppercase font-bold select-none">мин</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция Кнопок Выбора Сигнала -->
+            <div class="relative z-10 space-y-2">
+                <label class="text-xs font-bold tracking-wider uppercase text-[#848d9a] block">Форма аудиосигнала</label>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <!-- Sine -->
+                    <button data-wave="sine" class="wave-selector-btn flex flex-col items-center gap-2 py-3 px-2 bg-[#0a0b0d] border border-[#00e676] text-[#00e676] rounded-xl font-bold text-xs uppercase tracking-wider transition-all">
+                        <svg class="w-12 h-6" viewBox="0 0 50 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <path d="M2 10 C 10 0, 15 0, 25 10 C 35 20, 40 20, 48 10" />
+                        </svg>
+                        <span>Sine</span>
+                    </button>
+                    <!-- Square -->
+                    <button data-wave="square" class="wave-selector-btn flex flex-col items-center gap-2 py-3 px-2 bg-[#0a0b0d] border border-[#22262e] text-[#848d9a] hover:text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all">
+                        <svg class="w-12 h-6" viewBox="0 0 50 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+                            <path d="M2 18 L 14 18 L 14 2 L 26 2 L 26 18 L 38 18 L 38 2 L 48 2" />
+                        </svg>
+                        <span>Square</span>
+                    </button>
+                    <!-- Sawtooth -->
+                    <button data-wave="sawtooth" class="wave-selector-btn flex flex-col items-center gap-2 py-3 px-2 bg-[#0a0b0d] border border-[#22262e] text-[#848d9a] hover:text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all">
+                        <svg class="w-12 h-6" viewBox="0 0 50 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+                            <path d="M2 18 L 22 2 L 22 18 L 42 2 L 42 18 L 48 18" />
+                        </svg>
+                        <span>Sawtooth</span>
+                    </button>
+                    <!-- Triangle -->
+                    <button data-wave="triangle" class="wave-selector-btn flex flex-col items-center gap-2 py-3 px-2 bg-[#0a0b0d] border border-[#22262e] text-[#848d9a] hover:text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all">
+                        <svg class="w-12 h-6" viewBox="0 0 50 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+                            <path d="M2 18 L 14 2 L 26 18 L 38 2 L 48 18" />
+                        </svg>
+                        <span>Triangle</span>
+                    </button>
+                    <!-- White Noise -->
+                    <button data-wave="noise" class="wave-selector-btn flex flex-col items-center gap-2 py-3 px-2 bg-[#0a0b0d] border border-[#22262e] text-[#848d9a] hover:text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all col-span-2 sm:col-span-1">
+                        <svg class="w-12 h-6" viewBox="0 0 50 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 10 L5 3 L8 16 L12 5 L16 18 L20 2 L24 15 L28 4 L32 17 L36 6 L40 19 L44 2 L48 10" />
+                        </svg>
+                        <span>White Noise</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Рабочая область частоты -->
+        <section class="bg-[#121417] border border-[#22262e] rounded-xl p-6 shadow-2xl">
+            <!-- Кнопка запуска генератора + Счетчик таймера -->
+            <div class="mb-6 flex flex-col items-center gap-3">
+                <button id="play-btn" class="max-w-md w-full px-8 py-4 bg-[#00e676] hover:bg-[#33f591] text-black font-extrabold text-sm uppercase tracking-wider rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 shrink-0">
+                    <svg id="play-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
+                    <span id="play-text">Запуск</span>
+                </button>
+                <div id="timer-countdown" class="hidden text-xs font-mono font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 px-3 py-1 rounded-full uppercase tracking-wider animate-pulse">
+                    До отключения: <span id="timer-time-left">00:00</span>
+                </div>
+            </div>
+
+            <!-- ПОСТОЯННЫЙ ТОН -->
+            <div id="container-static" class="space-y-6">
+                <!-- Центральное интерактивное табло -->
+                <div id="static-display-box" class="text-center py-6 bg-[#0a0b0d] border border-[#22262e] rounded-xl relative flex flex-col items-center justify-center">
+                    <div class="flex items-center justify-center font-mono font-extrabold text-5xl text-white max-w-[280px] w-full border-b border-transparent focus-within:border-[#00e676] transition-colors px-2">
+                        <input id="freq-input" type="number" min="1" max="22000" value="50" class="w-full bg-transparent text-center text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        <span class="text-lg text-[#848d9a] ml-1 select-none">Hz</span>
+                    </div>
+                    <p class="text-[10px] text-[#848d9a] uppercase tracking-widest mt-2">Кликните на цифру для ввода с клавиатуры</p>
+                    
+                    <!-- Шаг точной подстройки строго под окошком -->
+                    <div class="flex gap-2 mt-4 max-w-[200px] w-full px-2">
+                        <button id="freq-dec" class="flex-1 py-1.5 bg-[#121417] border border-[#22262e] hover:border-red-500 hover:text-red-500 rounded-lg text-xs font-bold transition-colors select-none">-1 Hz</button>
+                        <button id="freq-inc" class="flex-1 py-1.5 bg-[#121417] border border-[#22262e] hover:border-[#00e676] hover:text-[#00e676] rounded-lg text-xs font-bold transition-colors select-none">+1 Hz</button>
+                    </div>
+                </div>
+
+                <!-- Блок заглушки при включении шума -->
+                <div id="noise-active-block" class="hidden text-center py-10 bg-[#0a0b0d] border border-[#22262e] rounded-xl flex flex-col items-center justify-center space-y-2">
+                    <span class="text-[#00e676] font-extrabold tracking-widest text-sm uppercase">Генерация Белого Шума</span>
+                    <span class="text-xs text-[#848d9a]">Частотный спектр заполнен равномерно по всей полосе пропускания</span>
+                </div>
+
+                <!-- Регулировка частоты -->
+                <div id="freq-slider-wrapper" class="space-y-2">
+                    <label for="freq-slider" class="text-xs font-bold tracking-wider uppercase text-[#848d9a] block">Регулировка частоты</label>
+                    <input id="freq-slider" type="range" min="1" max="22000" value="50" class="w-full accent-[#00e676] cursor-pointer bg-[#22262e] h-1.5 rounded-lg appearance-none">
+                    <div class="flex justify-between text-[10px] font-mono text-[#848d9a] pt-1 select-none">
+                        <span>1 Hz</span>
+                        <span>20 Hz</span>
+                        <span>80 Hz</span>
+                        <span>1000 Hz</span>
+                        <span>22000 Hz</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЧАСТОТНЫЙ СВИП -->
+            <div id="container-sweep" class="space-y-6 hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="space-y-2">
+                        <label for="sweep-start" class="text-xs font-bold tracking-wider uppercase text-[#848d9a] block">Начальная частота (Hz)</label>
+                        <input id="sweep-start" type="number" min="1" max="22000" value="20" class="w-full bg-[#0a0b0d] border border-[#22262e] rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#00e676] font-mono font-bold text-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="sweep-end" class="text-xs font-bold tracking-wider uppercase text-[#848d9a] block">Конечная частота (Hz)</label>
+                        <input id="sweep-end" type="number" min="1" max="22000" value="5000" class="w-full bg-[#0a0b0d] border border-[#22262e] rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#00e676] font-mono font-bold text-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="sweep-duration" class="text-xs font-bold tracking-wider uppercase text-[#848d9a] block">Время прохода (сек)</label>
+                        <input id="sweep-duration" type="number" min="1" max="60" value="10" class="w-full bg-[#0a0b0d] border border-[#22262e] rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#00e676] font-mono font-bold text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[11px] font-bold tracking-wider uppercase text-[#848d9a]">
+                        <span>Прогресс прохода</span>
+                        <span id="sweep-current-freq" class="text-white font-mono">Ожидание...</span>
+                    </div>
+                    <div class="w-full bg-[#0a0b0d] border border-[#22262e] h-3 rounded-full overflow-hidden p-[2px]">
+                        <div id="sweep-progress" class="bg-[#00e676] h-full rounded-full w-0 transition-all duration-100 ease-linear"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Техника безопасности -->
+        <section class="p-4 bg-[#121417] border border-[#22262e] rounded-xl flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-500 shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            </div>
+            <div class="space-y-1">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-orange-400">Техника безопасности (SPL Warning)</h4>
+                <p class="text-[11px] text-[#848d9a] leading-relaxed">
+                    Формы сигнала типа <span class="text-white font-semibold">Square</span>, <span class="text-white font-semibold">Sawtooth</span> и <span class="text-white font-semibold">White Noise</span> имеют максимальную спектральную плотность. Будьте осторожны на высокой громкости во избежание теплового повреждения катушек динамиков.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#08090b] border-t border-[#22262e] py-6 px-4 text-center text-xs text-[#848d9a]">
+        <div class="max-w-4xl mx-auto">
+            <p>© 2026 <span class="text-[#00e676] font-semibold">SPL-Helper LABS</span>. Сделано глухими для глухих.</p>
+        </div>
+    </footer>
+
+    <script>
+        let audioCtx = null;
+        let oscillator = null;
+        let noiseNode = null;
+        let gainNode = null;
+        let pannerNode = null;
+        
+        let isPlaying = false;
+        let currentMode = 'static';
+        let currentWaveType = 'sine';
+        
+        let sweepInterval = null;
+        let autoOffTimeout = null;
+        let countdownInterval = null;
+
+        const playBtn = document.getElementById('play-btn');
+        const playText = document.getElementById('play-text');
+        const playIcon = document.getElementById('play-icon');
+        
+        const modeStaticBtn = document.getElementById('mode-static');
+        const modeSweepBtn = document.getElementById('mode-sweep');
+        const containerStatic = document.getElementById('container-static');
+        const containerSweep = document.getElementById('container-sweep');
+        
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeVal = document.getElementById('volume-val');
+        const balanceSlider = document.getElementById('balance-slider');
+        const balanceVal = document.getElementById('balance-val');
+        
+        const freqSlider = document.getElementById('freq-slider');
+        const freqInput = document.getElementById('freq-input');
+        const freqInc = document.getElementById('freq-inc');
+        const freqDec = document.getElementById('freq-dec');
+        
+        const sweepStartInput = document.getElementById('sweep-start');
+        const sweepEndInput = document.getElementById('sweep-end');
+        const sweepDurationInput = document.getElementById('sweep-duration');
+        const sweepProgress = document.getElementById('sweep-progress');
+        const sweepCurrentFreq = document.getElementById('sweep-current-freq');
+
+        const timerInput = document.getElementById('timer-input');
+        const timerCountdown = document.getElementById('timer-countdown');
+        const timerTimeLeft = document.getElementById('timer-time-left');
+
+        const staticDisplayBox = document.getElementById('static-display-box');
+        const noiseActiveBlock = document.getElementById('noise-active-block');
+        const freqSliderWrapper = document.getElementById('freq-slider-wrapper');
+
+        function logPosition(value) {
+            const minPos = 1;
+            const maxPos = 22000;
+            const minVal = Math.log(1);
+            const maxVal = Math.log(22000);
+            const scale = (maxVal - minVal) / (maxPos - minPos);
+            return Math.exp(minVal + scale * (value - minPos));
+        }
+
+        function logValue(value) {
+            const minPos = 1;
+            const maxPos = 22000;
+            const minVal = Math.log(1);
+            const maxVal = Math.log(22000);
+            const scale = (maxVal - minVal) / (maxPos - minPos);
+            return minPos + (Math.log(value) - minVal) / scale;
+        }
+
+        function createWhiteNoiseNode() {
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+            const whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+            whiteNoise.loop = true;
+            return whiteNoise;
+        }
+
+        const waveButtons = document.querySelectorAll('.wave-selector-btn');
+        waveButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                waveButtons.forEach(b => {
+                    b.classList.remove('border-[#00e676]', 'text-[#00e676]');
+                    b.classList.add('border-[#22262e]', 'text-[#848d9a]', 'hover:text-white');
+                });
+                btn.classList.remove('border-[#22262e]', 'text-[#848d9a]', 'hover:text-white');
+                btn.classList.add('border-[#00e676]', 'text-[#00e676]');
+                
+                currentWaveType = btn.getAttribute('data-wave');
+
+                if (currentWaveType === 'noise' && currentMode === 'static') {
+                    staticDisplayBox.classList.add('hidden');
+                    freqSliderWrapper.classList.add('hidden');
+                    noiseActiveBlock.classList.remove('hidden');
+                } else {
+                    staticDisplayBox.classList.remove('hidden');
+                    freqSliderWrapper.classList.remove('hidden');
+                    noiseActiveBlock.classList.add('hidden');
+                }
+
+                if (isPlaying) {
+                    let wasPlaying = isPlaying;
+                    stopGenerator();
+                    if (wasPlaying) startGenerator();
+                }
+            });
+        });
+
+        modeStaticBtn.addEventListener('click', () => {
+            if(isPlaying) stopGenerator();
+            currentMode = 'static';
+            modeStaticBtn.className = "py-2.5 px-4 bg-[#0a0b0d] border border-[#00e676] text-[#00e676] font-bold text-xs uppercase rounded-lg tracking-wider transition-colors";
+            modeSweepBtn.className = "py-2.5 px-4 bg-[#0a0b0d] border border-[#22262e] text-[#848d9a] font-bold text-xs uppercase rounded-lg tracking-wider transition-colors hover:text-white";
+            containerStatic.classList.remove('hidden');
+            containerSweep.classList.add('hidden');
+            
+            if (currentWaveType === 'noise') {
+                staticDisplayBox.classList.add('hidden');
+                freqSliderWrapper.classList.add('hidden');
+                noiseActiveBlock.classList.remove('hidden');
+            }
+        });
+
+        modeSweepBtn.addEventListener('click', () => {
+            if(isPlaying) stopGenerator();
+            currentMode = 'sweep';
+            modeSweepBtn.className = "py-2.5 px-4 bg-[#0a0b0d] border border-[#00e676] text-[#00e676] font-bold text-xs uppercase rounded-lg tracking-wider transition-colors";
+            modeStaticBtn.className = "py-2.5 px-4 bg-[#0a0b0d] border border-[#22262e] text-[#848d9a] font-bold text-xs uppercase rounded-lg tracking-wider transition-colors hover:text-white";
+            containerSweep.classList.remove('hidden');
+            containerStatic.classList.add('hidden');
+        });
+
+        freqSlider.addEventListener('input', (e) => {
+            let hz = Math.round(logPosition(parseInt(e.target.value)));
+            if (hz > 22000) hz = 22000;
+            if (hz < 1) hz = 1;
+            freqInput.value = hz;
+            updateFrequency(hz);
+        });
+
+        freqInput.addEventListener('input', (e) => {
+            let val = parseInt(e.target.value) || 1;
+            if (val > 22000) val = 22000;
+            if (val < 1) val = 1;
+            freqSlider.value = Math.round(logValue(val));
+            updateFrequency(val);
+        });
+
+        freqInput.addEventListener('blur', () => {
+            if(!freqInput.value) {
+                freqInput.value = 50;
+                freqSlider.value = Math.round(logValue(50));
+                updateFrequency(50);
+            }
+        });
+
+        freqInc.addEventListener('click', () => {
+            let val = parseInt(freqInput.value) + 1;
+            if(val <= 22000) {
+                freqInput.value = val;
+                freqSlider.value = Math.round(logValue(val));
+                updateFrequency(val);
+            }
+        });
+
+        freqDec.addEventListener('click', () => {
+            let val = parseInt(freqInput.value) - 1;
+            if(val >= 1) {
+                freqInput.value = val;
+                freqSlider.value = Math.round(logValue(val));
+                updateFrequency(val);
+            }
+        });
+
+        freqSlider.value = Math.round(logValue(50));
+
+        volumeSlider.addEventListener('input', (e) => {
+            let pct = e.target.value;
+            volumeVal.textContent = pct + '%';
+            if (gainNode && audioCtx) {
+                gainNode.gain.linearRampToValueAtTime(pct / 100 * 0.4, audioCtx.currentTime + 0.02);
+            }
+        });
+
+        balanceSlider.addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            if (val === 0) balanceVal.textContent = 'Центр';
+            else if (val < 0) balanceVal.textContent = `Левее (${Math.abs(Math.round(val*100))}%)`;
+            else balanceVal.textContent = `Правее (${Math.round(val*100)}%)`;
+
+            if (pannerNode) {
+                pannerNode.pan.setValueAtTime(val, audioCtx.currentTime);
+            }
+        });
+
+        function updateFrequency(hz) {
+            if (oscillator && currentMode === 'static' && currentWaveType !== 'noise') {
+                oscillator.frequency.setValueAtTime(hz, audioCtx.currentTime);
+            }
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) stopGenerator();
+            else startGenerator();
+        });
+
+        function startGenerator() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            gainNode = audioCtx.createGain();
+            if (audioCtx.createStereoPanner) {
+                pannerNode = audioCtx.createStereoPanner();
+                pannerNode.pan.setValueAtTime(parseFloat(balanceSlider.value), audioCtx.currentTime);
+            }
+
+            let currentVol = volumeSlider.value / 100 * 0.4;
+            gainNode.gain.setValueAtTime(currentVol, audioCtx.currentTime);
+
+            if (currentWaveType === 'noise') {
+                noiseNode = createWhiteNoiseNode();
+                if (pannerNode) {
+                    noiseNode.connect(pannerNode);
+                    pannerNode.connect(gainNode);
+                } else {
+                    noiseNode.connect(gainNode);
+                }
+            } else {
+                oscillator = audioCtx.createOscillator();
+                oscillator.type = currentWaveType;
+                if (pannerNode) {
+                    oscillator.connect(pannerNode);
+                    pannerNode.connect(gainNode);
+                } else {
+                    oscillator.connect(gainNode);
+                }
+            }
+            
+            gainNode.connect(audioCtx.destination);
+            isPlaying = true;
+            
+            playText.textContent = "Стоп";
+            playBtn.classList.remove('bg-[#00e676]', 'hover:bg-[#33f591]');
+            playBtn.classList.add('bg-red-600', 'hover:bg-red-500', 'text-white');
+            playIcon.innerHTML = `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>`;
+
+            if (currentMode === 'static') {
+                if (currentWaveType === 'noise') {
+                    noiseNode.start();
+                } else {
+                    let hz = parseInt(freqInput.value);
+                    oscillator.frequency.setValueAtTime(hz, audioCtx.currentTime);
+                    oscillator.start();
+                }
+            } else if (currentMode === 'sweep') {
+                runSweepMode();
+            }
+
+            let timerMinutes = parseInt(timerInput.value) || 0;
+            if (timerMinutes > 0) {
+                let totalSeconds = timerMinutes * 60;
+                timerCountdown.classList.remove('hidden');
+                
+                updateCountdownDisplay(totalSeconds);
+
+                countdownInterval = setInterval(() => {
+                    totalSeconds--;
+                    if (totalSeconds <= 0) {
+                        clearInterval(countdownInterval);
+                    } else {
+                        updateCountdownDisplay(totalSeconds);
+                    }
+                }, 1000);
+
+                autoOffTimeout = setTimeout(() => {
+                    if (isPlaying) stopGenerator();
+                }, timerMinutes * 60 * 1000);
+            }
+        }
+
+        function updateCountdownDisplay(secs) {
+            let m = Math.floor(secs / 60).toString().padStart(2, '0');
+            let s = (secs % 60).toString().padStart(2, '0');
+            timerTimeLeft.textContent = `${m}:${s}`;
+        }
+
+        function stopGenerator() {
+            if (gainNode && audioCtx) {
+                try {
+                    gainNode.gain.setValueAtTime(gainNode.gain.value, audioCtx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.05);
+                } catch(e){}
+            }
+
+            setTimeout(() => {
+                if (oscillator) {
+                    try { oscillator.stop(); oscillator.disconnect(); } catch(e) {}
+                    oscillator = null;
+                }
+                if (noiseNode) {
+                    try { noiseNode.stop(); noiseNode.disconnect(); } catch(e) {}
+                    noiseNode = null;
+                }
+            }, 60);
+
+            if (sweepInterval) clearInterval(sweepInterval);
+            if (autoOffTimeout) clearTimeout(autoOffTimeout);
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            isPlaying = false;
+            playText.textContent = "Запуск";
+            playBtn.classList.remove('bg-red-600', 'hover:bg-red-500', 'text-white');
+            playBtn.classList.add('bg-[#00e676]', 'hover:bg-[#33f591]', 'text-black');
+            playIcon.innerHTML = `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>`;
+            
+            sweepProgress.style.width = '0%';
+            sweepCurrentFreq.textContent = "Ожидание...";
+            timerCountdown.classList.add('hidden');
+        }
+
+        function runSweepMode() {
+            let startHz = parseFloat(sweepStartInput.value) || 20;
+            let endHz = parseFloat(sweepEndInput.value) || 5000;
+            let duration = parseFloat(sweepDurationInput.value) || 10;
+
+            let startTime = audioCtx.currentTime;
+            let endTime = startTime + duration;
+
+            oscillator.frequency.setValueAtTime(startHz, startTime);
+            oscillator.frequency.exponentialRampToValueAtTime(endHz, endTime);
+            
+            oscillator.start(startTime);
+            oscillator.stop(endTime);
+
+            let startTimestamp = Date.now();
+            let totalMs = duration * 1000;
+
+            sweepInterval = setInterval(() => {
+                let elapsedMs = Date.now() - startTimestamp;
+                let progress = elapsedMs / totalMs;
+
+                if (progress >= 1) {
+                    clearInterval(sweepInterval);
+                    stopGenerator();
+                } else {
+                    sweepProgress.style.width = (progress * 100) + '%';
+                    let curFreq = startHz * Math.pow(endHz / startHz, progress);
+                    sweepCurrentFreq.textContent = Math.round(curFreq) + ' Hz';
+                }
+            }, 50);
+
+            oscillator.onended = () => {
+                if(isPlaying) stopGenerator();
+            };
+        }
+    </script>
+</body>
+</html>
